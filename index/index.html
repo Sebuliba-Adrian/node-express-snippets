@@ -1,0 +1,44 @@
+<html>
+<head> Sockets <head>
+<body>
+</body>
+<script src = "/socket.io/socket.io.js"></script>
+<script>
+ //#1 
+  var socket = io.connect('http://localhost:8080'); //connection gets established here - client object gets sent to server
+  //server object is received here
+  //client object will be used to both emit or listen to events
+  socket.on('messages', function(data) { // Here browser(client) listens to emitted events form server this is stem one 
+      alert(data.hello); //#1 - Listen for message events from the server 
+  });
+
+  //#2
+  var socket = io.connect('http://localhost:8080');
+  $('#chat_form').submit(function(e){
+      var message = $('#chat_input').val();
+      //emit message event on the server
+      socket.emit('messages', message)
+  });
+
+  //#3 amending #1
+  socket.on('messages', function(data) { insertMessage(data) }) //append message broad casted message to list using jquery
+
+//#4
+  var server = io.connect('http://localhost:8080');
+  server.on('connect', function(data){
+  $('#status').html('Connected to chattr');
+  nickname = prompt("What is your nickname?");
+
+  server.emit('join', nickname); //notify the server of the users nickname
+  })
+
+  server.on('add chatter', function(name){
+      var chatter = $('<li>'+name+'</li>').data('name', name);
+      $('#chatters').append(chatter);
+  });
+
+  server.on('remove chatter', function(name){
+    $('#chatters li[data-name='+name+ ']').remove();
+  })
+</script>
+</html>
